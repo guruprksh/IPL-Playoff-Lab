@@ -116,6 +116,8 @@ export default function App() {
     });
   };
 
+  const [activeTab, setActiveTab] = useState<'standings' | 'fixtures' | 'insights'>('standings');
+
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-white font-sans selection:bg-cyan-500/30 overflow-hidden flex flex-col p-4 select-none relative">
       {/* Cinematic Background Atmosphere */}
@@ -138,58 +140,63 @@ export default function App() {
             <span className="font-black italic text-xl">PL</span>
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tighter uppercase italic leading-none">IPL Playoff Lab</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold tracking-tighter uppercase italic leading-none">IPL Playoff Lab</h1>
+              <span className="bg-cyan-500/10 border border-cyan-500/20 px-1.5 py-0.5 rounded text-[8px] font-black text-cyan-400">2026 SEASON</span>
+            </div>
             <p className="text-[10px] font-mono tracking-widest uppercase" style={{ color: 'var(--theme-primary, #22d3ee)' }}>Can we still qualify?</p>
           </div>
         </div>
-        <div className="flex gap-8 items-center">
+        
+        {/* TABS FOR MOBILE/TABLET */}
+        <div className="flex bg-white/5 p-1 rounded-lg border border-white/10 mx-4">
+          {(['standings', 'fixtures', 'insights'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              id={`tab-${tab}`}
+              className={cn(
+                "px-4 py-1.5 rounded text-[10px] font-black uppercase tracking-widest transition-all",
+                activeTab === tab ? "bg-white/10 text-white shadow-lg" : "text-gray-500 hover:text-gray-300"
+              )}
+              style={activeTab === tab ? { color: 'var(--theme-primary, #fff)' } : {}}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex gap-4 items-center">
+          <button 
+            onClick={() => setMatches(IPL_SCHEDULE)}
+            className="text-[10px] font-mono text-gray-500 hover:text-white transition-colors uppercase tracking-widest border border-white/5 px-3 py-1 rounded"
+          >
+            Reset
+          </button>
           {favoriteTeamId && (
             <div className="flex gap-2">
               <button 
                 onClick={handleSuggestScenario}
+                id="btn-auto-optimize"
                 className="bg-theme-glow hover:bg-white/10 border transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded"
                 style={{ borderColor: 'var(--theme-primary, rgba(6, 182, 212, 0.3))', color: 'var(--theme-primary, #06b6d4)' }}
               >
                 <Zap className="w-3 h-3" />
                 Auto-Optimize
               </button>
-              <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setSelectedTeamId(favoriteTeamId)}>
-                 <img src={IPL_TEAMS.find(t => t.id === favoriteTeamId)?.logo} className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
-                 <span className="text-[10px] font-black uppercase tracking-widest hidden lg:block" style={{ color: 'var(--theme-primary, #06b6d4)' }}>FAV</span>
-              </div>
             </div>
           )}
-          <div className="flex flex-col items-end">
-            <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Chaos Meter</span>
-            <div className="flex items-center gap-2">
-              <div className="h-2 w-32 bg-gray-800 rounded-full overflow-hidden">
-                <motion.div 
-                  className="h-full bg-gradient-to-r from-yellow-400 to-red-500 shadow-[0_0_8px_#ef4444]"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${chaosScore}%` }}
-                />
-              </div>
-              <span className="font-mono font-bold text-red-500">{chaosScore.toFixed(0)}%</span>
-            </div>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded px-4 py-2 flex gap-4 hidden md:flex">
-            <div className="flex flex-col border-r border-white/10 pr-4">
-              <span className="text-[9px] text-gray-400 uppercase tracking-tighter">Most Critical Match</span>
-              <span className="text-xs font-bold">MI vs KKR <span className="text-cyan-400">+14% Swing</span></span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[9px] text-gray-400 uppercase tracking-tighter">Permutations</span>
-              <span className="text-xs font-mono font-bold">2,097,152</span>
-            </div>
-          </div>
         </div>
       </header>
 
       {/* MAIN CONTENT GRID */}
-      <div className="flex-1 grid grid-cols-12 gap-4 h-0 relative z-10">
+      <div className="flex-1 grid grid-cols-12 gap-4 min-h-0 relative z-10">
         
-        {/* LEFT: LIVE POINTS TABLE (Glassmorphism) */}
-        <div className="col-span-3 glass-panel p-3 flex flex-col h-full bg-white/[0.03] backdrop-blur-md">
+        {/* LEFT: STANDINGS (Only visible in standings tab or wide screen) */}
+        <div className={cn(
+          "col-span-12 lg:col-span-3 glass-panel p-3 flex flex-col h-full bg-white/[0.03] backdrop-blur-md transition-all",
+          activeTab !== 'standings' && "hidden lg:flex"
+        )}>
           <h2 className="text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
             <span className="w-1 h-3 inline-block" style={{ backgroundColor: 'var(--theme-primary, #06b6d4)' }}></span> Live Standings
           </h2>
@@ -238,17 +245,15 @@ export default function App() {
                   </motion.div>
                 ))}
               </AnimatePresence>
-              
-              {/* Qualification Cutoff Line */}
-              <div className="h-px bg-red-500/50 my-1 relative">
-                <span className="absolute right-0 -top-2 text-[8px] bg-[#0a0a0c] px-1 text-red-500 uppercase font-bold">Qual Limit</span>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* CENTER: ANALYZER & SIMULATOR */}
-        <div className="col-span-6 flex flex-col gap-4 overflow-y-auto custom-scrollbar pb-10">
+        {/* CENTER: ANALYZER & FIXTURES */}
+        <div className={cn(
+          "col-span-12 lg:col-span-6 flex flex-col gap-4 overflow-y-auto custom-scrollbar pb-10",
+          activeTab === 'insights' && "hidden lg:flex"
+        )}>
           {/* TEAM ANALYZER HERO */}
           {selectedTeam ? (
             <motion.div 
@@ -322,24 +327,14 @@ export default function App() {
             </div>
           )}
 
-          {/* MONTE CARLO VISUALIZER */}
-          <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4 shrink-0">
-            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Monte Carlo Prediction (5,000 Iterations)</h3>
-            <div className="h-48">
-              <ProbabilityChart probabilities={probabilities} />
-            </div>
-            <div className="flex justify-between text-[10px] text-gray-500 mt-2 font-mono uppercase border-t border-white/5 pt-2">
-              <span>Eliminated Floor</span>
-              <span>Qualification Ceiling</span>
-            </div>
-          </div>
-
-          {/* SCENARIO BUILDER (Mini UI) */}
-          <section>
+          {/* FIXTURES SECTION */}
+          <section className={cn(
+            activeTab !== 'fixtures' && "hidden lg:block"
+          )}>
             <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                <span className="w-1 h-3 bg-red-500 inline-block"></span> Upcoming Fixtures Simulation
+                <span className="w-1 h-3 bg-red-500 inline-block"></span> Fixtures Simulation
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {matches.filter(m => !m.isCompleted).slice(0, 12).map(match => (
                     <div key={match.id} className="bg-white/5 border border-white/10 p-3 rounded-lg flex flex-col justify-between hover:border-cyan-500/50 transition-all group">
                         <div>
@@ -356,6 +351,7 @@ export default function App() {
                                     "flex-1 py-1.5 text-[10px] font-bold rounded uppercase transition-all",
                                     match.winnerId === match.team1 ? "bg-cyan-600 text-white shadow-[0_0_10px_rgba(8,145,178,0.3)]" : "bg-white/5 text-gray-500 hover:bg-white/10"
                                 )}
+                                style={match.winnerId === match.team1 ? { backgroundColor: 'var(--theme-primary, #0891b2)' } : {}}
                             >
                                 {match.team1}
                             </button>
@@ -365,6 +361,7 @@ export default function App() {
                                     "flex-1 py-1.5 text-[10px] font-bold rounded uppercase transition-all",
                                     match.winnerId === match.team2 ? "bg-cyan-600 text-white shadow-[0_0_10px_rgba(8,145,178,0.3)]" : "bg-white/5 text-gray-500 hover:bg-white/10"
                                 )}
+                                style={match.winnerId === match.team2 ? { backgroundColor: 'var(--theme-primary, #0891b2)' } : {}}
                             >
                                 {match.team2}
                             </button>
@@ -376,7 +373,10 @@ export default function App() {
         </div>
 
         {/* RIGHT: AI INSIGHTS & UTILS */}
-        <div className="col-span-3 flex flex-col gap-4 overflow-y-auto custom-scrollbar h-full pb-10">
+        <div className={cn(
+          "col-span-12 lg:col-span-3 flex flex-col gap-4 overflow-y-auto custom-scrollbar h-full pb-10 transition-all",
+          activeTab !== 'insights' && "hidden lg:flex"
+        )}>
           {/* AI PANEL */}
           <div 
             className="bg-gradient-to-b from-black to-black border rounded-xl p-4 shrink-0 transition-all duration-1000"
@@ -385,11 +385,18 @@ export default function App() {
               backgroundImage: `linear-gradient(to bottom, var(--theme-glow, rgba(6, 182, 212, 0.1)), black)`
             }}
           >
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--theme-primary, #06b6d4)' }}></div>
-              <h3 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--theme-primary, #06b6d4)' }}>AI Playoff Scout</h3>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--theme-primary, #06b6d4)' }}></div>
+                <h3 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--theme-primary, #06b6d4)' }}>AI Playoff Scout</h3>
+              </div>
+              <span className="text-[9px] font-mono text-gray-500 uppercase tracking-tighter">PERMS: 2,097,152</span>
             </div>
             <div className="space-y-3">
+              <div className="p-2 border border-cyan-500/10 rounded bg-white/5 mb-2">
+                <span className="text-[9px] text-gray-400 uppercase tracking-tighter block mb-1">Most Critical Match</span>
+                <span className="text-[10px] font-bold">MI vs KKR <span className="text-cyan-400 font-mono tracking-tighter ml-2">+14% Swing</span></span>
+              </div>
               {aiInsights.length > 0 ? aiInsights.map((insight, idx) => (
                 <div 
                   key={idx} 
@@ -408,6 +415,14 @@ export default function App() {
             </div>
           </div>
 
+          {/* MONTE CARLO CHART */}
+          <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4 shrink-0">
+            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Monte Carlo Probabilities</h3>
+            <div className="h-32">
+              <ProbabilityChart probabilities={probabilities} />
+            </div>
+          </div>
+
           {/* NRR CALCULATOR COMPONENT */}
           <div className="bg-white/[0.03] border border-white/10 rounded-xl p-4 shrink-0">
             <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Real-Time NRR Adjuster</h3>
@@ -421,11 +436,8 @@ export default function App() {
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-[9px] text-gray-500 uppercase font-black">Success Probability Swing</label>
-                <input type="range" className="w-full accent-cyan-500 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
-                <div className="flex justify-between font-mono text-[10px] mt-2">
-                  <span className="text-gray-500 text-[9px]">MIN</span>
-                  <span className="text-cyan-400 font-bold">NRR IMPACT: +0.245</span>
-                  <span className="text-gray-500 text-[9px]">MAX</span>
+                <div className="flex justify-between font-mono text-[10px] items-center">
+                  <input type="range" className="flex-1 accent-cyan-500 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
                 </div>
               </div>
             </div>

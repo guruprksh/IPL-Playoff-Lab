@@ -34,12 +34,12 @@ function parseAIResponse(text: string): string[] {
 export async function getAIInsights(standings: StandingsEntry[], remainingMatches: Match[], selectedTeamId?: string) {
   try {
     const prompt = `
-      You are an expert IPL strategy analyst. 
-      Current Standings: ${JSON.stringify(standings.map(s => ({ team: s.id, pts: s.points, nrr: s.nrr })))}
+      You are an expert IPL strategy analyst for the 2026 season. 
+      Current Standings (Mid-Season 2026): ${JSON.stringify(standings.map(s => ({ team: s.id, pts: s.points, nrr: s.nrr })))}
       Remaining Matches: ${JSON.stringify(remainingMatches.map(m => ({ t1: m.team1, t2: m.team2 })))}
       Selected Team: ${selectedTeamId || 'All'}
 
-      Provide 3-4 concise, high-impact strategic insights for the IPL playoffs. 
+      Provide 3-4 concise, high-impact strategic insights for the IPL 2026 playoffs. 
       Focus on qualification scenarios, which teams to support, and NRR requirements.
       Keep it professional, like an F1 analyst.
       Format the response as a JSON array of strings.
@@ -61,9 +61,9 @@ export async function getAIInsights(standings: StandingsEntry[], remainingMatche
   } catch (error) {
     console.error("Gemini Error:", error);
     return [
-      "CSK fans should support RR tonight; a loss for SRH significantly boosts CSK's top-2 chances.",
-      "RCB must win their remaining 3 games by a combined margin of 45+ runs to overhaul DC's NRR.",
-      "The KKR vs MI clash is the most pivotal; KKR qualification probability swings by 18% based on the result."
+      "The 2026 season is reaching its tipping point; RR's early dominance creates a massive scramble for the bottom two seeds.",
+      "RCB's resurgence means they must win their remaining games to keep their playoff dreams alive despite DC's NRR lead.",
+      "The upcoming double-headers will be critical for mid-table teams like LSG and SRH who are neck-and-neck in the standings."
     ];
   }
 }

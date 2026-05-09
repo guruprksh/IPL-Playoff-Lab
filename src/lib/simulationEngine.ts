@@ -13,10 +13,15 @@ export function calculateStandings(teams: Team[], matches: Match[]): StandingsEn
 
   // Initialize with base stats
   teams.forEach(team => {
-    standings[team.id] = { ...team, rank: 0 };
-    // Reset points/stats to base if we're simulating from scratch OR 
-    // keep as is if base is "current standings" and matches are "remaining"
-    // For this app, we'll assume teams[] has "current" stats and matches[] has "remaining/modified" ones
+    standings[team.id] = { 
+      ...team, 
+      rank: 0,
+      matchesPlayed: 0,
+      wins: 0,
+      losses: 0,
+      nrr: 0,
+      points: 0
+    };
   });
 
   // Apply match outcomes
