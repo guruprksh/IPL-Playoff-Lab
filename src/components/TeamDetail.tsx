@@ -13,9 +13,11 @@ interface TeamDetailProps {
   matches: Match[];
   probability: number;
   onClose: () => void;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 }
 
-export function TeamDetail({ team, matches, probability, onClose }: TeamDetailProps) {
+export function TeamDetail({ team, matches, probability, onClose, isFavorite, onToggleFavorite }: TeamDetailProps) {
   const teamMatches = matches.filter(m => m.team1 === team.id || m.team2 === team.id);
   const remainingMatches = teamMatches.filter(m => !m.isCompleted);
   
@@ -47,12 +49,27 @@ export function TeamDetail({ team, matches, probability, onClose }: TeamDetailPr
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[100px] rounded-full -mr-32 -mt-32" />
           
-          <div className="w-24 h-24 rounded-full border-4 border-white/10 bg-black/40 flex items-center justify-center text-5xl shadow-2xl relative z-10">
-            {team.logo}
+          <div className="w-24 h-24 rounded-full border-4 border-white/10 bg-black/40 flex items-center justify-center p-4 shadow-2xl relative z-10">
+            {team.logo.startsWith('http') ? (
+              <img src={team.logo} alt={team.name} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+            ) : (
+                <span className="text-5xl">{team.logo}</span>
+            )}
           </div>
 
           <div className="relative z-10 flex-1">
-            <h2 className="text-4xl font-black uppercase italic tracking-tighter leading-none">{team.name}</h2>
+            <div className="flex items-center gap-4">
+              <h2 className="text-4xl font-black uppercase italic tracking-tighter leading-none">{team.name}</h2>
+              <button 
+                onClick={onToggleFavorite}
+                className={cn(
+                  "px-3 py-1 rounded text-[10px] font-bold uppercase transition-all border",
+                  isFavorite ? "bg-brand-cyan border-cyan-400 text-white" : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                )}
+              >
+                {isFavorite ? "Favorite Team" : "Set as Favorite"}
+              </button>
+            </div>
             <div className="flex gap-6 mt-4">
                <div className="flex flex-col">
                  <span className="text-[9px] uppercase font-black text-gray-500 tracking-widest leading-none mb-1">Qual Probability</span>

@@ -31,8 +31,24 @@ import { TeamDetail } from './components/TeamDetail';
 export default function App() {
   const [matches, setMatches] = useState<Match[]>(IPL_SCHEDULE);
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const [favoriteTeamId, setFavoriteTeamId] = useState<string | null>(null);
   const [aiInsights, setAiInsights] = useState<string[]>([]);
   const [probabilities, setProbabilities] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    if (favoriteTeamId) {
+      const team = IPL_TEAMS.find(t => t.id === favoriteTeamId);
+      if (team) {
+        document.documentElement.style.setProperty('--theme-primary', team.color);
+        document.documentElement.style.setProperty('--theme-secondary', team.secondaryColor || team.color);
+        document.documentElement.style.setProperty('--theme-glow', `${team.color}44`);
+      }
+    } else {
+      document.documentElement.style.removeProperty('--theme-primary');
+      document.documentElement.style.removeProperty('--theme-secondary');
+      document.documentElement.style.removeProperty('--theme-glow');
+    }
+  }, [favoriteTeamId]);
 
   // Current Standings based on matches (including simulated ones)
   const standings = useMemo(() => calculateStandings(IPL_TEAMS, matches), [matches]);
@@ -89,13 +105,13 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-white font-sans selection:bg-cyan-500/30 overflow-hidden flex flex-col p-4 select-none relative">
       {/* Cinematic Background Atmosphere */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-20">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-600/20 blur-[120px] rounded-full animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse [animation-delay:2s]" />
+      <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-30">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full animate-pulse blur-[120px]" style={{ backgroundColor: 'var(--theme-glow, rgba(6, 182, 212, 0.2))' }} />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full animate-pulse [animation-delay:2s] blur-[120px]" style={{ backgroundColor: 'var(--theme-secondary, rgba(59, 130, 246, 0.1))', opacity: 0.3 }} />
       </div>
 
       {/* TOP NAVIGATION / GLOBAL METRICS */}
-      <header className="flex items-center justify-between mb-4 pb-4 border-b border-white/10 relative z-10">
+      <header className="flex items-center justify-between mb-4 pb-4 border-b border-white/10 relative z-10 transition-all duration-1000">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.5)] cursor-pointer" onClick={() => setSelectedTeamId(null)}>
             <span className="font-black italic text-xl">PL</span>
@@ -106,6 +122,12 @@ export default function App() {
           </div>
         </div>
         <div className="flex gap-8 items-center">
+          {favoriteTeamId && (
+            <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setSelectedTeamId(favoriteTeamId)}>
+               <img src={IPL_TEAMS.find(t => t.id === favoriteTeamId)?.logo} className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
+               <span className="text-[10px] font-black uppercase text-cyan-400 tracking-widest hidden lg:block">FAV</span>
+            </div>
+          )}
           <div className="flex flex-col items-end">
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Chaos Meter</span>
             <div className="flex items-center gap-2">
@@ -158,11 +180,17 @@ export default function App() {
                     className={cn(
                       "grid grid-cols-6 text-xs items-center py-2.5 px-1 border-b border-white/5 cursor-pointer group transition-colors",
                       selectedTeamId === team.id ? "bg-cyan-400/10" : "hover:bg-white/5",
-                      idx < 4 ? "bg-cyan-400/5" : ""
+                      idx < 4 ? "bg-cyan-400/5" : "",
+                      favoriteTeamId === team.id && "border-l-2 border-l-cyan-400"
                     )}
                   >
                     <div className="col-span-2 flex items-center gap-2 font-bold truncate">
-                      <div className="w-1 h-4 rounded-full" style={{ backgroundColor: team.color }}></div> {team.shortName}
+                      {team.logo.startsWith('http') ? (
+                        <img src={team.logo} className="w-5 h-5 object-contain" referrerPolicy="no-referrer" />
+                      ) : (
+                        <div className="w-1 h-4 rounded-full" style={{ backgroundColor: team.color }}></div>
+                      )}
+                      {team.shortName}
                     </div>
                     <div className="text-center font-mono opacity-80">{team.points}</div>
                     <div className="text-center font-mono opacity-80">{team.wins}</div>
@@ -199,8 +227,12 @@ export default function App() {
             >
               <div className="absolute -right-10 -bottom-10 w-48 h-48 border-[10px] border-white/5 rounded-full"></div>
               <div className="relative">
-                <div className="w-24 h-24 rounded-full border-4 border-cyan-500 flex items-center justify-center p-2 bg-black/40">
-                  <span className="text-4xl font-black italic text-cyan-500">{selectedTeam.shortName}</span>
+                <div className="w-24 h-24 rounded-full border-4 border-cyan-500 flex items-center justify-center p-4 bg-black/40">
+                  {selectedTeam.logo.startsWith('http') ? (
+                    <img src={selectedTeam.logo} alt={selectedTeam.name} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+                  ) : (
+                    <span className="text-4xl font-black italic text-cyan-500">{selectedTeam.shortName}</span>
+                  )}
                 </div>
               </div>
               <div className="flex-1">
@@ -399,6 +431,8 @@ export default function App() {
             matches={matches} 
             probability={probabilities[selectedTeamId] || 0}
             onClose={() => setSelectedTeamId(null)}
+            isFavorite={favoriteTeamId === selectedTeamId}
+            onToggleFavorite={() => setFavoriteTeamId(favoriteTeamId === selectedTeamId ? null : selectedTeamId)}
           />
         )}
       </AnimatePresence>

@@ -6,20 +6,37 @@
 import { Team, Match } from '../types/ipl';
 
 export const IPL_TEAMS: Team[] = [
-  { id: 'CSK', name: 'Chennai Super Kings', shortName: 'CSK', color: '#FFFF00', secondaryColor: '#0081E9', logo: '🦁', matchesPlayed: 10, wins: 6, losses: 4, nrr: 0.627, points: 12 },
-  { id: 'KKR', name: 'Kolkata Knight Riders', shortName: 'KKR', color: '#3A225D', secondaryColor: '#B3A123', logo: '🟣', matchesPlayed: 10, wins: 8, losses: 2, nrr: 1.096, points: 16 },
-  { id: 'RR', name: 'Rajasthan Royals', shortName: 'RR', color: '#EA1B85', secondaryColor: '#254AA5', logo: '👑', matchesPlayed: 10, wins: 8, losses: 2, nrr: 0.700, points: 16 },
-  { id: 'SRH', name: 'Sunrisers Hyderabad', shortName: 'SRH', color: '#FF822E', secondaryColor: '#000000', logo: '🦅', matchesPlayed: 10, wins: 6, losses: 4, nrr: 0.072, points: 12 },
-  { id: 'LSG', name: 'Lucknow Super Giants', shortName: 'LSG', color: '#44A0F9', secondaryColor: '#D1AC30', logo: '🏏', matchesPlayed: 10, wins: 6, losses: 4, nrr: 0.094, points: 12 },
-  { id: 'DC', name: 'Delhi Capitals', shortName: 'DC', color: '#00008B', secondaryColor: '#FF0000', logo: '🐯', matchesPlayed: 11, wins: 5, losses: 6, nrr: -0.442, points: 10 },
-  { id: 'PBKS', name: 'Punjab Kings', shortName: 'PBKS', color: '#ED1B24', secondaryColor: '#FFFFFF', logo: '🦁', matchesPlayed: 10, wins: 4, losses: 6, nrr: -0.062, points: 8 },
-  { id: 'GT', name: 'Gujarat Titans', shortName: 'GT', color: '#0B2135', secondaryColor: '#D1AC30', logo: '⚡', matchesPlayed: 10, wins: 4, losses: 6, nrr: -1.113, points: 8 },
-  { id: 'MI', name: 'Mumbai Indians', shortName: 'MI', color: '#004BA0', secondaryColor: '#D1AC30', logo: '🌪️', matchesPlayed: 11, wins: 3, losses: 8, nrr: -0.356, points: 6 },
-  { id: 'RCB', name: 'Royal Challengers Bengaluru', shortName: 'RCB', color: '#EC1C24', secondaryColor: '#000000', logo: '🦁', matchesPlayed: 10, wins: 3, losses: 7, nrr: -0.415, points: 6 },
+  { id: 'KKR', name: 'Kolkata Knight Riders', shortName: 'KKR', color: '#3A225D', secondaryColor: '#B3A123', logo: 'https://upload.wikimedia.org/wikipedia/en/4/4c/Kolkata_Knight_Riders_Logo.svg', matchesPlayed: 14, wins: 9, losses: 3, nrr: 1.428, points: 20 },
+  { id: 'SRH', name: 'Sunrisers Hyderabad', shortName: 'SRH', color: '#FF822E', secondaryColor: '#000000', logo: 'https://upload.wikimedia.org/wikipedia/en/8/81/Sunrisers_Hyderabad_Logo.svg', matchesPlayed: 14, wins: 8, losses: 5, nrr: 0.413, points: 17 },
+  { id: 'RR', name: 'Rajasthan Royals', shortName: 'RR', color: '#EA1B85', secondaryColor: '#254AA5', logo: 'https://upload.wikimedia.org/wikipedia/en/6/60/Rajasthan_Royals_Logo.svg', matchesPlayed: 14, wins: 8, losses: 5, nrr: 0.273, points: 17 },
+  { id: 'RCB', name: 'Royal Challengers Bengaluru', shortName: 'RCB', color: '#2B2A29', secondaryColor: '#EC1C24', logo: 'https://upload.wikimedia.org/wikipedia/en/2/24/Royal_Challengers_Bangalore_logo.svg', matchesPlayed: 14, wins: 7, losses: 7, nrr: 0.459, points: 14 },
+  { id: 'CSK', name: 'Chennai Super Kings', shortName: 'CSK', color: '#FDB913', secondaryColor: '#0081C5', logo: 'https://upload.wikimedia.org/wikipedia/en/2/2b/Chennai_Super_Kings_Logo.svg', matchesPlayed: 14, wins: 7, losses: 7, nrr: 0.573, points: 14 },
+  { id: 'DC', name: 'Delhi Capitals', shortName: 'DC', color: '#005C9C', secondaryColor: '#EF1B23', logo: 'https://upload.wikimedia.org/wikipedia/en/f/f5/Delhi_Capitals_Logo.svg', matchesPlayed: 14, wins: 7, losses: 7, nrr: -0.377, points: 14 },
+  { id: 'LSG', name: 'Lucknow Super Giants', shortName: 'LSG', color: '#0057E2', secondaryColor: '#FF4B4B', logo: 'https://upload.wikimedia.org/wikipedia/en/e/e5/Lucknow_Super_Giants_Logo.svg', matchesPlayed: 14, wins: 7, losses: 7, nrr: -0.667, points: 14 },
+  { id: 'GT', name: 'Gujarat Titans', shortName: 'GT', color: '#1B2133', secondaryColor: '#E3A857', logo: 'https://upload.wikimedia.org/wikipedia/en/0/09/Gujarat_Titans_Logo.svg', matchesPlayed: 14, wins: 5, losses: 7, nrr: -1.062, points: 12 },
+  { id: 'PBKS', name: 'Punjab Kings', shortName: 'PBKS', color: '#ED1B24', secondaryColor: '#D1D1D1', logo: 'https://upload.wikimedia.org/wikipedia/en/d/d4/Punjab_Kings_Logo.svg', matchesPlayed: 14, wins: 5, losses: 9, nrr: -0.353, points: 10 },
+  { id: 'MI', name: 'Mumbai Indians', shortName: 'MI', color: '#004BA0', secondaryColor: '#D1AB3E', logo: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Mumbai_Indians_Logo.svg', matchesPlayed: 14, wins: 4, losses: 10, nrr: -0.318, points: 8 },
 ];
 
 export const IPL_SCHEDULE: Match[] = [
-  { id: 51, team1: 'MI', team2: 'KKR', date: '2024-05-03', venue: 'Wankhede', isCompleted: true, winnerId: 'KKR' },
+  // Completed Matches (Samples from 2024)
+  { id: 1, team1: 'CSK', team2: 'RCB', date: '2024-03-22', venue: 'Chennai', isCompleted: true, winnerId: 'CSK' },
+  { id: 2, team1: 'PBKS', team2: 'DC', date: '2024-03-23', venue: 'Mohali', isCompleted: true, winnerId: 'PBKS' },
+  { id: 3, team1: 'KKR', team2: 'SRH', date: '2024-03-23', venue: 'Kolkata', isCompleted: true, winnerId: 'KKR' },
+  { id: 4, team1: 'RR', team2: 'LSG', date: '2024-03-24', venue: 'Jaipur', isCompleted: true, winnerId: 'RR' },
+  { id: 5, team1: 'GT', team2: 'MI', date: '2024-03-24', venue: 'Ahmedabad', isCompleted: true, winnerId: 'GT' },
+  { id: 10, team1: 'KKR', team2: 'RCB', date: '2024-03-29', venue: 'Bengaluru', isCompleted: true, winnerId: 'KKR' },
+  { id: 15, team1: 'RCB', team2: 'LSG', date: '2024-04-02', venue: 'Bengaluru', isCompleted: true, winnerId: 'LSG' },
+  { id: 20, team1: 'MI', team2: 'DC', date: '2024-04-07', venue: 'Wankhede', isCompleted: true, winnerId: 'MI' },
+  { id: 25, team1: 'MI', team2: 'RCB', date: '2024-04-11', venue: 'Wankhede', isCompleted: true, winnerId: 'MI' },
+  { id: 30, team1: 'RR', team2: 'KKR', date: '2024-04-16', venue: 'Kolkata', isCompleted: true, winnerId: 'KKR' },
+  { id: 35, team1: 'DC', team2: 'SRH', date: '2024-04-20', venue: 'Delhi', isCompleted: true, winnerId: 'SRH' },
+  { id: 40, team1: 'DC', team2: 'GT', date: '2024-04-24', venue: 'Delhi', isCompleted: true, winnerId: 'DC' },
+  { id: 45, team1: 'GT', team2: 'RCB', date: '2024-04-28', venue: 'Ahmedabad', isCompleted: true, winnerId: 'RCB' },
+  { id: 50, team1: 'SRH', team2: 'RR', date: '2024-05-02', venue: 'Hyderabad', isCompleted: true, winnerId: 'SRH' },
+  
+  // Upcoming / Simulation Targets (Match 51 onwards)
+  { id: 51, team1: 'MI', team2: 'KKR', date: '2024-05-03', venue: 'Wankhede', isCompleted: false },
   { id: 52, team1: 'RCB', team2: 'GT', date: '2024-05-04', venue: 'Bengaluru', isCompleted: false },
   { id: 53, team1: 'PBKS', team2: 'CSK', date: '2024-05-05', venue: 'Dharamsala', isCompleted: false },
   { id: 54, team1: 'LSG', team2: 'KKR', date: '2024-05-05', venue: 'Lucknow', isCompleted: false },

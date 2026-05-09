@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-cyan: #06b6d4;
+  --color-brand-cyan: var(--theme-primary, #06b6d4);
+  --color-brand-secondary: var(--theme-secondary, #3b82f6);
   --color-brand-dark: #0a0a0c;
   --color-brand-border: rgba(255, 255, 255, 0.1);
   --color-brand-glass: rgba(255, 255, 255, 0.03);
@@ -9,7 +10,7 @@
 
 @layer base {
   body {
-    @apply bg-brand-dark text-white antialiased;
+    @apply bg-brand-dark text-white antialiased transition-colors duration-700;
   }
 }
 
