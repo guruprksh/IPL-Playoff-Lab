@@ -18,7 +18,7 @@ import {
   BrainCircuit
 } from 'lucide-react';
 import { IPL_TEAMS, IPL_SCHEDULE } from './data/mockData';
-import { calculateStandings } from './lib/simulationEngine';
+import { calculateStandings, suggestOptimalScenario } from './lib/simulationEngine';
 import { runMonteCarlo } from './lib/monteCarlo';
 import { cn, formatPercent, getNRRColor } from './lib/utils';
 import { getAIInsights } from './services/geminiService';
@@ -102,6 +102,20 @@ export default function App() {
     return Math.min(100, remaining * 12);
   }, [matches]);
 
+  const handleSuggestScenario = () => {
+    if (!favoriteTeamId) return;
+    const optimized = suggestOptimalScenario(IPL_TEAMS, matches, favoriteTeamId);
+    setMatches(optimized);
+    
+    // Extra flair: toast or something? Let's just do a subtle celebration
+    confetti({
+      particleCount: 80,
+      spread: 50,
+      origin: { y: 0.8 },
+      colors: [IPL_TEAMS.find(t => t.id === favoriteTeamId)?.color || '#06b6d4']
+    });
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-white font-sans selection:bg-cyan-500/30 overflow-hidden flex flex-col p-4 select-none relative">
       {/* Cinematic Background Atmosphere */}
@@ -113,19 +127,36 @@ export default function App() {
       {/* TOP NAVIGATION / GLOBAL METRICS */}
       <header className="flex items-center justify-between mb-4 pb-4 border-b border-white/10 relative z-10 transition-all duration-1000">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.5)] cursor-pointer" onClick={() => setSelectedTeamId(null)}>
+          <div 
+            className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-700 cursor-pointer" 
+            style={{ 
+              background: 'linear-gradient(135deg, var(--theme-primary, #06b6d4), var(--theme-secondary, #3b82f6))',
+              boxShadow: '0 0 15px var(--theme-glow, rgba(6,182,212,0.5))'
+            }}
+            onClick={() => setSelectedTeamId(null)}
+          >
             <span className="font-black italic text-xl">PL</span>
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tighter uppercase italic leading-none">IPL Playoff Lab</h1>
-            <p className="text-[10px] text-cyan-400 font-mono tracking-widest uppercase">Can we still qualify?</p>
+            <p className="text-[10px] font-mono tracking-widest uppercase" style={{ color: 'var(--theme-primary, #22d3ee)' }}>Can we still qualify?</p>
           </div>
         </div>
         <div className="flex gap-8 items-center">
           {favoriteTeamId && (
-            <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setSelectedTeamId(favoriteTeamId)}>
-               <img src={IPL_TEAMS.find(t => t.id === favoriteTeamId)?.logo} className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
-               <span className="text-[10px] font-black uppercase text-cyan-400 tracking-widest hidden lg:block">FAV</span>
+            <div className="flex gap-2">
+              <button 
+                onClick={handleSuggestScenario}
+                className="bg-theme-glow hover:bg-white/10 border transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded"
+                style={{ borderColor: 'var(--theme-primary, rgba(6, 182, 212, 0.3))', color: 'var(--theme-primary, #06b6d4)' }}
+              >
+                <Zap className="w-3 h-3" />
+                Auto-Optimize
+              </button>
+              <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setSelectedTeamId(favoriteTeamId)}>
+                 <img src={IPL_TEAMS.find(t => t.id === favoriteTeamId)?.logo} className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
+                 <span className="text-[10px] font-black uppercase tracking-widest hidden lg:block" style={{ color: 'var(--theme-primary, #06b6d4)' }}>FAV</span>
+              </div>
             </div>
           )}
           <div className="flex flex-col items-end">
@@ -160,7 +191,7 @@ export default function App() {
         {/* LEFT: LIVE POINTS TABLE (Glassmorphism) */}
         <div className="col-span-3 glass-panel p-3 flex flex-col h-full bg-white/[0.03] backdrop-blur-md">
           <h2 className="text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
-            <span className="w-1 h-3 bg-cyan-400 inline-block"></span> Live Standings
+            <span className="w-1 h-3 inline-block" style={{ backgroundColor: 'var(--theme-primary, #06b6d4)' }}></span> Live Standings
           </h2>
           <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
             <div className="grid grid-cols-6 text-[10px] text-gray-500 font-bold uppercase py-2 px-1 border-b border-white/5 sticky top-0 bg-[#0a0a0c]/80 z-20 backdrop-blur-md">
@@ -168,7 +199,7 @@ export default function App() {
               <div className="text-center">P</div>
               <div className="text-center">W</div>
               <div className="text-center">NRR</div>
-              <div className="text-center text-cyan-400">Q%</div>
+              <div className="text-center" style={{ color: 'var(--theme-primary, #06b6d4)' }}>Q%</div>
             </div>
             <div className="flex-1 flex flex-col">
               <AnimatePresence mode="popLayout">
@@ -179,10 +210,14 @@ export default function App() {
                     onClick={() => setSelectedTeamId(team.id)}
                     className={cn(
                       "grid grid-cols-6 text-xs items-center py-2.5 px-1 border-b border-white/5 cursor-pointer group transition-colors",
-                      selectedTeamId === team.id ? "bg-cyan-400/10" : "hover:bg-white/5",
-                      idx < 4 ? "bg-cyan-400/5" : "",
-                      favoriteTeamId === team.id && "border-l-2 border-l-cyan-400"
+                      selectedTeamId === team.id ? "bg-white/10" : "hover:bg-white/5",
+                      idx < 4 ? "bg-white/5" : "",
+                      favoriteTeamId === team.id && "border-l-2"
                     )}
+                    style={{ 
+                      borderLeftColor: favoriteTeamId === team.id ? 'var(--theme-primary, #06b6d4)' : undefined,
+                      backgroundColor: selectedTeamId === team.id ? 'var(--theme-glow, rgba(6, 182, 212, 0.1))' : undefined
+                    }}
                   >
                     <div className="col-span-2 flex items-center gap-2 font-bold truncate">
                       {team.logo.startsWith('http') ? (
@@ -197,7 +232,7 @@ export default function App() {
                     <div className={cn("text-center font-mono text-[10px]", getNRRColor(team.nrr))}>
                       {team.nrr > 0 ? '+' : ''}{team.nrr.toFixed(1)}
                     </div>
-                    <div className="text-center font-mono font-bold text-cyan-400">
+                    <div className="text-center font-mono font-bold" style={{ color: 'var(--theme-primary, #06b6d4)' }}>
                       {probabilities[team.id]?.toFixed(0)}
                     </div>
                   </motion.div>
@@ -220,18 +255,20 @@ export default function App() {
               key={selectedTeam.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={cn(
-                "rounded-xl border p-6 flex items-center gap-8 shadow-[0_0_30px_rgba(6,182,212,0.1)] relative overflow-hidden shrink-0",
-                "bg-gradient-to-r border-cyan-500/30 from-cyan-900/40 to-black"
-              )}
+              className="rounded-xl border p-6 flex items-center gap-8 shadow-[0_0_30px_rgba(6,182,212,0.1)] relative overflow-hidden shrink-0 bg-gradient-to-r from-black to-black transition-all duration-700"
+              style={{ 
+                borderColor: 'var(--theme-primary, rgba(6, 182, 212, 0.3))',
+                boxShadow: '0 0 30px var(--theme-glow, rgba(6, 182, 212, 0.15))',
+                backgroundImage: `linear-gradient(to right, var(--theme-glow, rgba(6, 182, 212, 0.15)), black)`
+              }}
             >
               <div className="absolute -right-10 -bottom-10 w-48 h-48 border-[10px] border-white/5 rounded-full"></div>
               <div className="relative">
-                <div className="w-24 h-24 rounded-full border-4 border-cyan-500 flex items-center justify-center p-4 bg-black/40">
+                <div className="w-24 h-24 rounded-full border-4 flex items-center justify-center p-4 bg-black/40 transition-all duration-700" style={{ borderColor: 'var(--theme-primary, #06b6d4)' }}>
                   {selectedTeam.logo.startsWith('http') ? (
                     <img src={selectedTeam.logo} alt={selectedTeam.name} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                   ) : (
-                    <span className="text-4xl font-black italic text-cyan-500">{selectedTeam.shortName}</span>
+                    <span className="text-4xl font-black italic" style={{ color: 'var(--theme-primary, #06b6d4)' }}>{selectedTeam.shortName}</span>
                   )}
                 </div>
               </div>
@@ -253,10 +290,10 @@ export default function App() {
                   </div>
                   <div className="text-right">
                     <span className="text-xs text-gray-500 block uppercase font-bold tracking-widest">Qual Prob.</span>
-                    <span className={cn(
-                        "text-5xl font-mono font-black",
-                        (probabilities[selectedTeam.id] || 0) < 20 ? "text-red-500" : "text-cyan-400"
-                    )}>
+                    <span 
+                      className="text-5xl font-mono font-black transition-all duration-700"
+                      style={{ color: (probabilities[selectedTeam.id] || 0) < 20 ? '#ef4444' : 'var(--theme-primary, #22d3ee)' }}
+                    >
                         {probabilities[selectedTeam.id]?.toFixed(1)}<span className="text-2xl">%</span>
                     </span>
                   </div>
@@ -268,7 +305,7 @@ export default function App() {
                   </div>
                   <div className="bg-black/40 rounded p-3 border border-white/5 backdrop-blur-sm">
                     <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest">Winning Margin Needed</p>
-                    <p className="text-xs font-bold mt-1 text-cyan-400">Moderate dependency on NRR swings</p>
+                    <p className="text-xs font-bold mt-1" style={{ color: 'var(--theme-primary, #06b6d4)' }}>Moderate dependency on NRR swings</p>
                   </div>
                 </div>
               </div>
@@ -341,14 +378,24 @@ export default function App() {
         {/* RIGHT: AI INSIGHTS & UTILS */}
         <div className="col-span-3 flex flex-col gap-4 overflow-y-auto custom-scrollbar h-full pb-10">
           {/* AI PANEL */}
-          <div className="bg-gradient-to-b from-cyan-900/20 to-black border border-cyan-500/20 rounded-xl p-4 shrink-0">
+          <div 
+            className="bg-gradient-to-b from-black to-black border rounded-xl p-4 shrink-0 transition-all duration-1000"
+            style={{ 
+              borderColor: 'var(--theme-primary, rgba(6, 182, 212, 0.2))',
+              backgroundImage: `linear-gradient(to bottom, var(--theme-glow, rgba(6, 182, 212, 0.1)), black)`
+            }}
+          >
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-cyan-400">AI Playoff Scout</h3>
+              <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--theme-primary, #06b6d4)' }}></div>
+              <h3 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--theme-primary, #06b6d4)' }}>AI Playoff Scout</h3>
             </div>
             <div className="space-y-3">
               {aiInsights.length > 0 ? aiInsights.map((insight, idx) => (
-                <div key={idx} className="p-3 bg-white/5 rounded-lg border-l-2 border-cyan-500 transition-hover hover:bg-white/10">
+                <div 
+                  key={idx} 
+                  className="p-3 bg-white/5 rounded-lg border-l-2 transition-hover hover:bg-white/10 transition-all duration-700"
+                  style={{ borderLeftColor: 'var(--theme-primary, #06b6d4)' }}
+                >
                   <p className="text-[11px] leading-relaxed text-gray-300">
                     "{insight}"
                   </p>

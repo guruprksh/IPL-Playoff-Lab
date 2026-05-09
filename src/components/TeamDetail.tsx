@@ -64,8 +64,12 @@ export function TeamDetail({ team, matches, probability, onClose, isFavorite, on
                 onClick={onToggleFavorite}
                 className={cn(
                   "px-3 py-1 rounded text-[10px] font-bold uppercase transition-all border",
-                  isFavorite ? "bg-brand-cyan border-cyan-400 text-white" : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                  isFavorite ? "text-white" : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
                 )}
+                style={{ 
+                  backgroundColor: isFavorite ? 'var(--theme-primary, #06b6d4)' : undefined,
+                  borderColor: isFavorite ? 'var(--theme-primary, #06b6d4)' : undefined
+                }}
               >
                 {isFavorite ? "Favorite Team" : "Set as Favorite"}
               </button>
@@ -73,7 +77,7 @@ export function TeamDetail({ team, matches, probability, onClose, isFavorite, on
             <div className="flex gap-6 mt-4">
                <div className="flex flex-col">
                  <span className="text-[9px] uppercase font-black text-gray-500 tracking-widest leading-none mb-1">Qual Probability</span>
-                 <span className="text-2xl font-mono font-bold text-cyan-400">{probability.toFixed(1)}%</span>
+                 <span className="text-2xl font-mono font-bold" style={{ color: 'var(--theme-primary, #22d3ee)' }}>{probability.toFixed(1)}%</span>
                </div>
                <div className="w-px h-8 bg-white/10" />
                <div className="flex flex-col">
@@ -97,7 +101,7 @@ export function TeamDetail({ team, matches, probability, onClose, isFavorite, on
           {/* Recent Form */}
           <section>
             <h3 className="text-xs font-bold uppercase tracking-widest mb-6 text-gray-500 flex items-center gap-2">
-               <Activity className="w-4 h-4 text-cyan-500" /> Recent Schedule Performance
+               <Activity className="w-4 h-4" style={{ color: 'var(--theme-secondary, #3b82f6)' }} /> Recent Schedule Performance
             </h3>
             <div className="space-y-3">
               {teamMatches.slice(-8).map((match) => (
@@ -132,9 +136,15 @@ export function TeamDetail({ team, matches, probability, onClose, isFavorite, on
 
           {/* AI Strategy Insights */}
           <section className="flex flex-col gap-8">
-            <div className="p-6 bg-cyan-500/5 border border-cyan-500/20 rounded-2xl relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-3xl rounded-full" />
-               <h3 className="text-xs font-bold uppercase tracking-widest mb-4 text-cyan-400 flex items-center gap-2">
+            <div 
+              className="p-6 border rounded-2xl relative overflow-hidden transition-all duration-700"
+              style={{ 
+                borderColor: 'var(--theme-primary, rgba(6, 182, 212, 0.2))',
+                backgroundColor: 'var(--theme-glow, rgba(6, 182, 212, 0.05))'
+              }}
+            >
+               <div className="absolute top-0 right-0 w-32 h-32 blur-3xl rounded-full" style={{ backgroundColor: 'var(--theme-glow, rgba(6, 182, 212, 0.1))' }} />
+               <h3 className="text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2" style={{ color: 'var(--theme-primary, #22d3ee)' }}>
                   <TrendingUp className="w-4 h-4" /> Tactical Outlook
                </h3>
                <p className="text-sm leading-relaxed text-gray-300 relative z-10 italic">

@@ -55,9 +55,49 @@ export function calculateStandings(teams: Team[], matches: Match[]): StandingsEn
 }
 
 /**
- * Checks if a team qualifies for playoffs (Top 4)
+ * Suggests the best winners for incomplete matches to maximize qualification chance of targetTeamId
  */
-export function isQualified(teamId: string, standings: StandingsEntry[]): boolean {
-  const team = standings.find(s => s.id === teamId);
-  return team ? team.rank <= 4 : false;
+export function suggestOptimalScenario(teams: Team[], matches: Match[], targetTeamId: string): Match[] {
+  const optimizedMatches = [...matches];
+  const incompleteMatches = optimizedMatches.filter(m => !m.isCompleted);
+
+  // We iterate through incomplete matches and greedily pick the best winner
+  incompleteMatches.forEach(match => {
+    if (match.team1 === targetTeamId) {
+      match.isCompleted = true;
+      match.winnerId = match.team1;
+    } else if (match.team2 === targetTeamId) {
+      match.isCompleted = true;
+      match.winnerId = match.team2;
+    } else {
+      // Evaluate both outcomes
+      const standingsA = calculateStandings(teams, optimizedMatches.map(m => 
+        m.id === match.id ? { ...m, isCompleted: true, winnerId: m.team1 } : m
+      ));
+      const standingsB = calculateStandings(teams, optimizedMatches.map(m => 
+        m.id === match.id ? { ...m, isCompleted: true, winnerId: m.team2 } : m
+      ));
+
+      const rankA = standingsA.find(s => s.id === targetTeamId)?.rank || 11;
+      const rankB = standingsB.find(s => s.id === targetTeamId)?.rank || 11;
+
+      if (rankA < rankB) {
+        match.winnerId = match.team1;
+      } else if (rankB < rankA) {
+        match.winnerId = match.team2;
+      } else {
+        // If ranks same, penalize the team with higher current points to prevent them pulling away
+        const teamA = teams.find(t => t.id === match.team1);
+        const teamB = teams.find(t => t.id === match.team2);
+        if ((teamA?.points || 0) < (teamB?.points || 0)) {
+          match.winnerId = match.team1;
+        } else {
+          match.winnerId = match.team2;
+        }
+      }
+      match.isCompleted = true;
+    }
+  });
+
+  return optimizedMatches;
 }
